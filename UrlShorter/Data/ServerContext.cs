@@ -11,5 +11,12 @@ namespace UrlShorter.Data
         }
 
         public DbSet<ShortUrl> ShortUrls { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ShortUrl>()
+                .HasIndex(b => b.SharedUrl).IsUnique();
+        }
+
     }
 }

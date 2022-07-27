@@ -30,6 +30,9 @@ namespace UrlShorter.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("SharedUrl")
+                        .IsUnique();
+
                     b.ToTable("ShortUrls");
                 });
 #pragma warning restore 612, 618

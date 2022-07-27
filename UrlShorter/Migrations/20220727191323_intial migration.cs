@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace UrlShorter.Migrations
 {
-    public partial class MyFirstMigration : Migration
+    public partial class intialmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -19,6 +19,12 @@ namespace UrlShorter.Migrations
                 {
                     table.PrimaryKey("PK_ShortUrls", x => x.Id);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ShortUrls_SharedUrl",
+                table: "ShortUrls",
+                column: "SharedUrl",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

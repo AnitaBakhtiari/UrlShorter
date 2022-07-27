@@ -9,8 +9,8 @@ using UrlShorter.Data;
 namespace UrlShorter.Migrations
 {
     [DbContext(typeof(ServerContext))]
-    [Migration("20220724154246_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20220727191323_intial migration")]
+    partial class intialmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,9 @@ namespace UrlShorter.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("SharedUrl")
+                        .IsUnique();
 
                     b.ToTable("ShortUrls");
                 });
