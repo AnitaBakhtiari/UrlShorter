@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using UrlShorter.Data;
+using UrlShorter.Services;
 
 namespace UrlShorter
 {
@@ -27,6 +28,7 @@ namespace UrlShorter
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShorter", Version = "v1" });
             });
+            services.AddScoped<IShortUrlService, ShortUrlService>();
             services.AddDbContext<ServerContext>(options => options.UseSqlite("filename=ShortUrlDb.db"));
 
 

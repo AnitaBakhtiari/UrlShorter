@@ -1,40 +1,42 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using UrlShorter.Data;
+using UrlShorter.Helpers;
 using UrlShorter.Models;
+using UrlShorter.Services;
 
 namespace UrlShorter.Controllers
 {
     [ApiController]
     public class UrlShorterController : ControllerBase
     {
-        private readonly ServerContext _context;
-        public UrlShorterController(ServerContext context)
+        private readonly IShortUrlService _service;
+        public UrlShorterController(IShortUrlService service)
         {
-            _context = context;
+            _service = service;
         }
 
         [HttpPost("GenerateUrl")]
-        public string GenerateUrl(string url)
+        public async Task<string> GenerateUrl(string url)
         {
             var uriBuilder = new UriBuilder()
             {
                 Scheme = "https",
                 Host = "localhost",
                 Port = 44336,
-                Path = GenerateRandomString()
+                Path = Helper.GenerateRandomString()
             };
 
             var shortUrl = new ShortUrl
             {
-                Id = new Guid(),
                 BaseUrl = url,
                 SharedUrl = uriBuilder.ToString()
             };
 
-            _context.ShortUrls.Add(shortUrl);
-            _context.SaveChanges();
+            _service.AddShortUrl(shortUrl);
+            await _service.SaveChange();
 
             return uriBuilder.ToString();
 
@@ -42,26 +44,13 @@ namespace UrlShorter.Controllers
 
 
         [HttpGet("{value}")]
-        public IActionResult RedirectUrl(string value)
+        public async Task<IActionResult> RedirectUrl(string value)
         {
-            var url = _context.ShortUrls.FirstOrDefault(a => a.SharedUrl.Contains(value));
+            var url = await _service.Find(value);
             if (url is null) return NotFound();
             return Redirect(url.BaseUrl);
         }
 
-        private static string GenerateRandomString()
-        {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[5];
-            var random = new Random();
-
-            for (int i = 0; i < stringChars.Length; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
-            var finalString = new string(stringChars);
-
-            return finalString;
-        }
+       
     }
 }
