@@ -30,7 +30,7 @@ namespace UrlShorter
             });
             services.AddScoped<IShortUrlService, ShortUrlService>();
             services.AddDbContext<ServerContext>(options => options.UseSqlite("filename=ShortUrlDb.db"));
-
+            services.AddResponseCaching();
 
         }
 
@@ -49,6 +49,7 @@ namespace UrlShorter
             app.UseRouting();
 
             app.UseAuthorization();
+            app.UseResponseCaching();
 
             app.UseEndpoints(endpoints =>
             {

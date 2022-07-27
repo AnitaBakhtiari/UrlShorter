@@ -21,22 +21,26 @@ namespace UrlShorter.Controllers
         [HttpPost("GenerateUrl")]
         public async Task<string> GenerateUrl(string url)
         {
+            var random = Helper.GenerateRandomString();
             var uriBuilder = new UriBuilder()
             {
                 Scheme = "https",
                 Host = "localhost",
                 Port = 44336,
-                Path = Helper.GenerateRandomString()
+                Path = random
             };
+
 
             var shortUrl = new ShortUrl
             {
                 BaseUrl = url,
-                SharedUrl = uriBuilder.ToString()
+                SharedUrl = random
             };
 
             _service.AddShortUrl(shortUrl);
-            await _service.SaveChange();
+            await _service.SaveChangeAsync();
+
+           
 
             return uriBuilder.ToString();
 
@@ -44,9 +48,10 @@ namespace UrlShorter.Controllers
 
 
         [HttpGet("{value}")]
+        [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new string[] { "value" })]
         public async Task<IActionResult> RedirectUrl(string value)
         {
-            var url = await _service.Find(value);
+            var url = await _service.FindAsync(value);
             if (url is null) return NotFound();
             return Redirect(url.BaseUrl);
         }
