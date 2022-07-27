@@ -6,7 +6,7 @@ namespace UrlShorter.Services
     public interface IShortUrlService
     {
         ShortUrl AddShortUrl(ShortUrl shortUrl);
-        Task<ShortUrl> Find(string Url);
-        Task SaveChange();
+        Task<ShortUrl> FindAsync(string Url);
+        Task SaveChangeAsync();
     }
 }

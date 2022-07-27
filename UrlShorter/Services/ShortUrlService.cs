@@ -9,14 +9,17 @@ namespace UrlShorter.Services
     {
         private readonly ServerContext _context;
 
+        public ShortUrlService(ServerContext context)
+        {
+            _context = context;
+        }
         public ShortUrl AddShortUrl(ShortUrl shortUrl)
         {
             _context.ShortUrls.Add(shortUrl);
             return shortUrl;
         }
+        public Task<ShortUrl> FindAsync(string Url) => _context.ShortUrls.FirstOrDefaultAsync(a => a.SharedUrl == Url);
 
-        public async Task<ShortUrl> Find(string Url) => await _context.ShortUrls.FirstOrDefaultAsync(a => a.SharedUrl.Contains(Url));
-
-        public async Task SaveChange() => await _context.SaveChangesAsync();
+        public Task SaveChangeAsync() => _context.SaveChangesAsync();
     }
 }
