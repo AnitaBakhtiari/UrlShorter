@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
-using UrlShorter.Data;
 using UrlShorter.Helpers;
 using UrlShorter.Models;
 using UrlShorter.Services;
@@ -21,7 +19,10 @@ namespace UrlShorter.Controllers
         [HttpPost("GenerateUrl")]
         public async Task<string> GenerateUrl(string url)
         {
+            //Create random string
             var random = Helper.GenerateRandomString();
+
+            //Create short url for users
             var uriBuilder = new UriBuilder()
             {
                 Scheme = "https",
@@ -29,7 +30,6 @@ namespace UrlShorter.Controllers
                 Port = 44336,
                 Path = random
             };
-
 
             var shortUrl = new ShortUrl
             {
@@ -40,22 +40,20 @@ namespace UrlShorter.Controllers
             _service.AddShortUrl(shortUrl);
             await _service.SaveChangeAsync();
 
-           
-
             return uriBuilder.ToString();
 
         }
 
 
-        [HttpGet("{value}")]
-        [ResponseCache(Duration = 120, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new string[] { "value" })]
-        public async Task<IActionResult> RedirectUrl(string value)
+        [HttpGet("{randomId}")]
+        [ResponseCache(Duration = 120, VaryByQueryKeys = new string[] { "randomId" })]
+        public async Task<IActionResult> RedirectUrl(string randomId)
         {
-            var url = await _service.FindAsync(value);
+            var url = await _service.FindAsync(randomId);
             if (url is null) return NotFound();
             return Redirect(url.BaseUrl);
         }
 
-       
+
     }
 }
