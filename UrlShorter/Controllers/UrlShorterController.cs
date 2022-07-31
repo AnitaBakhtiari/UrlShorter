@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using UrlShorter.Helpers;
 using UrlShorter.Models;
 using UrlShorter.Services;
+using UrlShorter.Utils;
 
 namespace UrlShorter.Controllers
 {
@@ -20,7 +20,7 @@ namespace UrlShorter.Controllers
         public async Task<string> GenerateUrl(string url)
         {
             //Create random string
-            var random = Helper.GenerateRandomString();
+            var random = Util.GenerateRandomString();
 
             //Create short url for users
             var uriBuilder = new UriBuilder()
@@ -37,8 +37,7 @@ namespace UrlShorter.Controllers
                 SharedUrl = random
             };
 
-            _service.AddShortUrl(shortUrl);
-            await _service.SaveChangeAsync();
+            await _service.AddShortUrl(shortUrl);
 
             return uriBuilder.ToString();
 
@@ -46,7 +45,7 @@ namespace UrlShorter.Controllers
 
 
         [HttpGet("{randomId}")]
-        [ResponseCache(Duration = 120, VaryByQueryKeys = new string[] { "randomId" })]
+        [ResponseCache(Duration = 120 * 60, Location = ResponseCacheLocation.Client, VaryByQueryKeys = new string[] { "randomId" })]
         public async Task<IActionResult> RedirectUrl(string randomId)
         {
             var url = await _service.FindAsync(randomId);
