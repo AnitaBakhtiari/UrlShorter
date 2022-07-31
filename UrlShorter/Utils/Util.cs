@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace UrlShorter.Helpers
+namespace UrlShorter.Utils
 {
-    public static class Helper
+    public static class Util
     {
         public static string GenerateRandomString()
         {
