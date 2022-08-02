@@ -1,46 +1,41 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using UrlShorter.Models;
 using UrlShorter.Services;
-using UrlShorter.Utils;
 
 namespace UrlShorter.Controllers
 {
     [ApiController]
     public class UrlShorterController : ControllerBase
     {
+        private readonly ILogger<UrlShorterController> _logger;
         private readonly IShortUrlService _service;
-        public UrlShorterController(IShortUrlService service)
+        public UrlShorterController(IShortUrlService service, ILogger<UrlShorterController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         [HttpPost("GenerateUrl")]
         public async Task<string> GenerateUrl(string url)
         {
-            //Create random string
-            var random = Util.GenerateRandomString();
+            var shortUrl = new ShortUrl
+            {
+                BaseUrl = url
+            };
 
-            //Create short url for users
+            var shortUrlTable = await _service.AddShortUrl(shortUrl);
+
             var uriBuilder = new UriBuilder()
             {
                 Scheme = "https",
                 Host = "localhost",
                 Port = 44336,
-                Path = random
+                Path = shortUrlTable.SharedUrl
             };
-
-            var shortUrl = new ShortUrl
-            {
-                BaseUrl = url,
-                SharedUrl = random
-            };
-
-            await _service.AddShortUrl(shortUrl);
-
             return uriBuilder.ToString();
-
         }
 
 
