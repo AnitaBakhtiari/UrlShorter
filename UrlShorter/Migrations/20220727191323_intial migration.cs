@@ -11,7 +11,7 @@ namespace UrlShorter.Migrations
                 name: "ShortUrls",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     BaseUrl = table.Column<string>(type: "TEXT", nullable: true),
                     SharedUrl = table.Column<string>(type: "TEXT", nullable: true)
                 },

@@ -14,8 +14,16 @@ namespace UrlShorter.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<ShortUrl>()
-                .HasIndex(b => b.SharedUrl).IsUnique();
+                .HasIndex(b => b.SharedUrl)
+                .IsUnique();
+
+            modelBuilder.HasSequence<int>("GenerateKey", x => x.StartsAt(10).IncrementsBy(1));
+
+            modelBuilder.Entity<ShortUrl>()
+                .Property(o => o.SharedUrl)
+                .HasDefaultValueSql("NEXT VALUE FOR GenerateKey");
         }
 
     }
