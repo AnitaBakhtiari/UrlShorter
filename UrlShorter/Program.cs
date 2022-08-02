@@ -1,26 +1,44 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.OpenApi.Models;
+using UrlShorter.Data;
+using UrlShorter.Services;
 
-namespace UrlShorter
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen(c =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            CreateHostBuilder(args).Build().Run();
-        }
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShorter", Version = "v1" });
+});
+builder.Services.AddScoped<IShortUrlService, ShortUrlService>();
+//sqlite database
+//services.AddDbContext<ServerContext>(options => options.UseSqlite("filename=ShortUrlDb.db"));
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-    }
+//sql server database
+builder.Services.AddDbContext<ServerContext>(options => options.UseSqlServer(builder.Configuration["ConnectionStrings:Default"]));
+
+builder.Services.AddResponseCaching();
+
+var app = builder.Build();
+
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.UseResponseCaching();
+
+app.MapControllers();
+
+app.Run();
