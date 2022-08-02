@@ -29,7 +29,12 @@ namespace UrlShorter
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "UrlShorter", Version = "v1" });
             });
             services.AddScoped<IShortUrlService, ShortUrlService>();
-            services.AddDbContext<ServerContext>(options => options.UseSqlite("filename=ShortUrlDb.db"));
+            // sqlite database
+            //services.AddDbContext<ServerContext>(options => options.UseSqlite("filename=ShortUrlDb.db"));
+
+            //sql server database
+            services.AddDbContext<ServerContext>(options => options.UseSqlServer(Configuration["ConnectionStrings:Default"]));
+
             services.AddResponseCaching();
 
         }
